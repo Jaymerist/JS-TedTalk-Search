@@ -12,17 +12,27 @@ HTML for table rows.
 */
 
 let allTedTalks = []
+let displayedTalks = []
 const DATA_URL = '/data/ted_talks.json'
+let tedTalkForm = document.querySelector('#ted-talk-filter')
+let viewsSortBtn = document.querySelector('.views')
+let likesSortBtn = document.querySelector('.likes')
 
+//render data from JSON file
+//get ted talk data
 const getTalk = async() =>{
     const response = await fetch(DATA_URL,{method: "GET"})
     const data = await response.json()
-    renderTedTalks(data)
     data.map((talk)=>{
-        allTedTalks.push(talk.title)
+        allTedTalks.push(talk)
+        displayedTalks.push(talk)
     })
+    renderTedTalks(allTedTalks)
 }
 
+getTalk()
+
+//render elements 
 const renderTedTalks = (talkData) =>{
     let talkDisplayElement = document.querySelector('#ted-talk-rows')
     talkDisplayElement.innerHTML = ''
@@ -39,6 +49,43 @@ const renderTedTalks = (talkData) =>{
     })
 }
 
+//filter results from text search
+//event listener
+tedTalkForm.addEventListener("submit", (event)=>{
+    event.preventDefault()
+    let titleSearch = document.querySelector('input[name=search-query]').value
+    let viewSearch = document.querySelector('input[name=min-views]').value
+    filterTalks(titleSearch, viewSearch)
+})
 
+const filterTalks = (search = '', minViews = 0) =>{
+    displayedTalks = []
+    allTedTalks.forEach(element =>{
+        if(element.title.toLowerCase().includes(search.toLowerCase()) && element.views >= minViews ){
+            displayedTalks.push(element) //add to array if the talk meets the filter requirements
+        }
+    })
+    renderTedTalks(displayedTalks)//re-render results
+}
 
-getTalk()
+//BONUS MARKS
+
+viewsSortBtn.addEventListener("click", (event)=>{
+    let table = document.querySelector("#ted-talk-rows")
+    let rows = Array.from(table.rows)
+    console.log(rows)
+    let switching = true
+    while(switching){
+        switching = false
+        rows.forEach((row, index) => {
+            if(index != rows.length - 1){
+                let viewA = row.querySelector("td:nth-of-type(5)").innerHTML
+                let viewB = rows[index + 1].querySelector("td:nth-of-type(5)").innerHTML
+                if (viewA < viewB) {
+                    row.parentNode.insertBefore(rows[index + 1], row)
+                    switching = true
+                }
+            }
+        })
+    }
+})
