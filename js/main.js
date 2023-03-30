@@ -67,25 +67,3 @@ const filterTalks = (search = '', minViews = 0) =>{
     })
     renderTedTalks(displayedTalks)//re-render results
 }
-
-//BONUS MARKS
-
-viewsSortBtn.addEventListener("click", (event)=>{
-    let table = document.querySelector("#ted-talk-rows")
-    let rows = Array.from(table.rows)
-    console.log(rows)
-    let switching = true
-    while(switching){
-        switching = false
-        rows.forEach((row, index) => {
-            if(index != rows.length - 1){
-                let viewA = row.querySelector("td:nth-of-type(5)").innerHTML
-                let viewB = rows[index + 1].querySelector("td:nth-of-type(5)").innerHTML
-                if (viewA < viewB) {
-                    row.parentNode.insertBefore(rows[index + 1], row)
-                    switching = true
-                }
-            }
-        })
-    }
-})
